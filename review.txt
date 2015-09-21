@@ -1,0 +1,8 @@
+# Loop Permutations and Compilers
+icc appears to handle vectorization better than gcc. To strengthen the case you have made, it might be worthwhile including the vectorization report from icc (`-vec`) that shows the improvements in stride length made by the compiler. In regard to the loop order, we had an identical conclusion for naive matrix multiply, noting that this ordering is not necessarily true when blocking was implemented because the entire multiplication kernel now fits within the cache.
+
+# Tuned Blocked Matrix multiply
+To the best of our understanding, the L3 cache is shared across the ring interconnect, which means that an operation on an adjacent core could invalidate the entire cache line. It may be better to use the L2 cache parameters instead when calculating the results. In addition, the upper range of the block sizes you have investigated (1024/2048) appear to come very close (or exceed, in the case of 2048) to the dimensions of the input itself, which negates the effects of blocking. Using `sysconf` to query the parameters on the fly is a nice idea though!
+
+# Next Stages
+We have tried transposing the array and obtained good results. Even a naive transposition is beneficial because it allows one to exploit a different loop order to minimize the stride of the outermost loop. An in-memory transposition will probably yield the best results, but we have yet to try that ourselves.
