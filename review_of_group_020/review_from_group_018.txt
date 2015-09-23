@@ -1,0 +1,165 @@
+Feedback from Group 018:
+
+Sorry this is so last minute, I am the last person in my group
+and wanted to give your group the time / respect it deserves.
+I hope the below is useful, but generally you're doing better
+than I am...so it may not be that helpful :/
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 1. Things that went well:                                #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) Not attempting to block-multiply on small matrices is an
+   excellent check worth making.  Make sure, though, that you
+   are comparing to BLOCK_SIZE rather than 64.  That way if
+   you change BLOCK_SIZE this check will still remain
+   effective.
+
+b) Usage of restrict.  This gave our group about half a Gflop
+   of a performance boost straight off the bat ;)
+
+c) Avoiding power of 2 block sizes to account for 8-way set
+   associative caches (like the ones on the cluster).
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 2. Things you might improve on:                          #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) 80 and even 109 seem rather small for block sizes.  I think
+   you should get much better performance by drastically
+   increasing this size.
+
+   As you mentioned, the L2 cache is 256KB = 256*1024*1024bytes
+   (~268 million).  Even if you interpret KB as 256million here
+   (1000 instead of 1024, which is worth playing around with),
+   you are not using nearly as much as you think you are.
+
+   Each double is 8 bytes, and even if you try and fit the
+   entire block of all three matrices in there you have
+
+       (104 * 104)elements * 3 matrices * 8bytes per element
+       = 259,584 bytes
+
+   Try using larger block sizes and seeing what you get?
+
+   I would advise avoiding trying to get exactly the size of
+   the L2 cache, there may be overheads that would prevent
+   this from being ideal.
+
+b) Changing loop ordering.  You mentioned this very briefly,
+   but I don't think you arrived at the optimal loop ordering.
+   Yours is using j - i - k, and the general consensus among
+   other groups as well as results we obtained of playing with
+   every single permutation indicate that j - k - i wins.
+
+   Feel free to look at the plots on the second page for what
+   I am talking about in ours:
+
+   https://github.com/sjm324/matmul-/blob/master/docs/group018.pdf
+
+   Though it's worth noting that you are getting around the same
+   performance as us.  Hopefully this will make it destroy ours!
+
+c) I'm concerned that a malloc/free for every call to basic_dgemm
+   may be giving you a significant overhead.  One alternative
+   would be to at the top declare below the #define statements
+   so that it is in global scope
+
+   double* restrict smallA = NULL;
+   double* restrict smallB = NULL;
+
+   Then in square_dgemm, if you get past M<START_BLOCK_SIZE,
+   malloc once there, and then make sure to free after the loops
+   are done.
+
+d) On that note, since you are controlling how large these are,
+   this is an excellent opportunity to align the memory.  I
+   myself have not gotten there yet, but after reviewing group
+   19's code, it appears to be
+
+   _mm_malloc( < bytes you want to malloc >, < alignment >);
+
+   and the associated
+
+   _mm_free( . . .);
+
+   So in their code they are doing a 64 byte alignment, so you would
+   use that as your second parameter.
+
+   Bindel spoke about this in class, but specifying aligned memory
+   (noting that he used the aligned(x) directive at one point) makes it
+   so that certain vector optimizations will be added in by the
+   compiler for you :)
+
+   Beyond that / how to actually do this, I do not yet know.
+
+e) I'm not convinced that START_BLOCK_SIZE necessarily is 1200,
+   but I don't understand how you arrived at that number in the
+   first place.
+
+   I only bring it up because you may be setting that incorrectly,
+   and it's worth keeping an eye on -- especially if you change
+   the block size.  Perhaps it would be better to define that
+   in terms of BLOCK_SIZE? E.g.
+
+   #define START_BLOCK_SIZE (BLOCK_SIZE * 15)
+
+   Also, you don't need to cast 80 to an int for BLOCK_SIZE, it
+   can just be
+
+   #define BLOCK_SIZE 80
+
+   If you are unfamiliar, all that #define does is basically
+   copy-paste.  So when the compiler goes through and evaluates
+   the line
+
+   const int M = (i+BLOCK_SIZE > lda? lda-i : BLOCK_SIZE);
+
+   it will first replace the #define'd variable:
+
+   const int M = (i+((int) 80) > lda? lda-i : ((int) 80));
+
+   Since you only use BLOCK_SIZE in the context of int's, leaving
+   it as 80 is fine.
+
+f) I have yet to start playing around with these, but it is
+   quite apparent that playing around with different compilation
+   flags has significant impacts.  So that's definitely something
+   to start playing with.
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 3. Anything else I'd like to add:                        #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) Nice work so far!!! I focused more on things I thought may
+   be useful to improve upon, since you are doing about as well
+   as I am.
+
+b) As such, I guess I should say take all of my input with a
+   grain of salt.  I could be way off on some of these ideas.
+
+c) The indentation (as viewable from github) of the file
+   dgemm_mine.c in the folder submission_files is rather
+   strange.
+
+   It might be nice to bring them all to consistent levels of
+   indentation ;)
+
