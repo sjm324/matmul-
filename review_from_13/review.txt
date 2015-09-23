@@ -1,0 +1,17 @@
+Group 13: Taejoon Song, Marc Aurele Gilles, Gregory Granito 
+
+
+What you think they did well (and why)
+-You seem that have thought this through since your code is very clear and you are getting really good results (at least compared ours).
+- Loop ordering yielded good results. Our group couldn’t get this result, though.
+- Also, using compiler flag results in good result, which is interesting.
+- Overall you seem to be getting very good results! :D
+
+What you think they could improve on (and why)
+-You might want to try block indexing? Although we have and our performance is far below yours. But
+	it is possible that it'd help further improve your performance.
+-It’d be great to include MKL stats on your graphs for us, that was by far the highest performance.
+
+Anything else you would like to add
+-Overall this seems like you guys have made good progress.
+-Good luck!
