@@ -1,0 +1,136 @@
+Feedback from Group 018:
+
+Sorry this is so last minute, I am the last person in my group
+and wanted to give your group the time / respect it deserves.
+I hope the below is useful, but generally your doing way better
+than I am...so it may not be that helpful :/
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 1. Things that went well:                                #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) Loop ordering evaluation / correct order for these 
+   matrices was implemented and described.
+
+b) You are most likely right that fitting everything in a
+   block into L2 cache is better, but see 2 (a)
+
+c) Did I mention you are KILLING IT?  Seriously, nice job
+   so far!
+
+d) Compiler flag -restrict.  This may have the effect I am
+   about to describe, but we gained about half a Gflop just
+   by putting the keyword restrict in front of all the
+   parameters to square_dgemm and related subroutines.
+
+e) Vectorization and general badassery.
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 2. Things you might improve on:                          #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) Your discussion of why everything needs to fit into L2 was
+   not exactly clear.  This exercise is for optimizing serial
+   code (single core), so in theory putting everything in L3
+   should work.
+
+   That said, I tried to fit everything in L3 and get around 
+   half the performance you do x0
+
+b) You mentioned a ~80% utilization of L2, leaving space for
+   some overhead.
+
+   i) The loop overhead is insignificant.  Those values will
+      almost certainly be stored in registers.
+
+  ii) What other overheads are you thinking of?  Temporary
+      variables will also be stored in registers.
+
+ iii) I think you have an invalid metric -- 256KB is most 
+      likely not 256,000 bytes.  I'm almost certain unix
+      systems are going to be 256 * 1024 * 1024, 1024MB in a
+      KB, and 1024B in MB.
+
+   The reason I mention these is I think you may be able to
+   squeeze some more performance out by choosing a bigger
+   rect_length and/or block_size.  As in I think you may have
+   given a more conservative estimate on how much of these
+   matrices you can fit in L2, and suspect you could get more
+   just by trying to process more at a time.
+
+c) Byte alignment.  Your report talks about 16, but you seem
+   to have 64.  Which is fine, since you have probably been
+   working on things since this was submitted.
+
+   The question is where did these numbers come from, and
+   why?  And more importantly, is this really even allowed.
+
+   I could be misunderstanding, but in order for you to assume
+   this you are stating that your version of matmul.c is the
+   correct one.  My understanding, from the comments at the top
+   of the file, is that we are supposed to assume that the
+   original matmul.c is what will be used here.
+
+   The affect this had on MKL leads me to think that you are
+   not supposed to be tinkering with byte alignment where you
+   are.
+
+   I believe the solution is that you have to create your
+   own local byte aligned arrays (say the size of the block you
+   intend to work with), and first copy from the original
+   arrays.  Since these local arrays are aligned, you can then
+   take adavantage of vectorizing on these.  Of course this has
+   a significant memory overhead.
+
+   Again, I could be completely wrong.  There is a lot about
+   this assignment that is generally vague about what we are / 
+   are not allowed to change.
+
+d) Similar to the discussion in (c), you appear to be hyper-
+   tuning to the cluster itself.  Perhaps that is the goal of
+   this project, and I just missed that altogether.  But this
+   means that say for any computer with a different (especially
+   smaller) L2 cache, you will have significantly different
+   performance.
+
+e) Likewise, you specified the AVX2 ISA.  Which is not supported
+   by every processor. 
+
+f) This is a totally random thing, but I wonder what would
+   happen if you tried a much larger alignment e.g. the
+   PAGE_SIZE.  It seems to me that you could potentially get
+   some really good results from having more things vectorized
+   at the same time.  But I could also be way off on how
+   that would actually work.  Worth a shot, though, since it
+   would be really easy to just put right in there xD
+
+###############################################################
+#                                                             #
+##                                                            #
+###                                                           #
+#### 3. Anything else I'd like to add:                        #
+###                                                           #
+##                                                            #
+#                                                             #
+###############################################################
+
+a) I'd like to re-iterate that I really think you have done an
+   epic job so far!!!  I focused more on things I thought may
+   be useful to improve upon, since you are doing way better
+   than I am.
+
+b) As such, I guess I should say take all of my input with a
+   grain of salt.  I could be way off on some of these ideas.
+
