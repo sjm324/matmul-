@@ -58,10 +58,7 @@ b) You mentioned a ~80% utilization of L2, leaving space for
   ii) What other overheads are you thinking of?  Temporary
       variables will also be stored in registers.
 
- iii) I think you have an invalid metric -- 256KB is most 
-      likely not 256,000 bytes.  I'm almost certain unix
-      systems are going to be 256 * 1024 * 1024, 1024MB in a
-      KB, and 1024B in MB.
+ iii) [ just kidding i'm crazy ... sorry! ]
 
    The reason I mention these is I think you may be able to
    squeeze some more performance out by choosing a bigger
