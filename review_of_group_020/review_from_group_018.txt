@@ -37,26 +37,7 @@ c) Avoiding power of 2 block sizes to account for 8-way set
 #                                                             #
 ###############################################################
 
-a) 80 and even 109 seem rather small for block sizes.  I think
-   you should get much better performance by drastically
-   increasing this size.
-
-   As you mentioned, the L2 cache is 256KB = 256*1024*1024bytes
-   (~268 million).  Even if you interpret KB as 256million here
-   (1000 instead of 1024, which is worth playing around with),
-   you are not using nearly as much as you think you are.
-
-   Each double is 8 bytes, and even if you try and fit the
-   entire block of all three matrices in there you have
-
-       (104 * 104)elements * 3 matrices * 8bytes per element
-       = 259,584 bytes
-
-   Try using larger block sizes and seeing what you get?
-
-   I would advise avoiding trying to get exactly the size of
-   the L2 cache, there may be overheads that would prevent
-   this from being ideal.
+a) [ removed because I'm crazy ... sorry ]
 
 b) Changing loop ordering.  You mentioned this very briefly,
    but I don't think you arrived at the optimal loop ordering.
