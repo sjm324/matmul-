@@ -2,16 +2,12 @@ Group 13: Taejoon Song, Marc Aurele Gilles, Gregory Granito
 
 
 What you think they did well (and why)
--You seem that have thought this through since your code is very clear and you are getting really good results (at least compared ours).
-- Loop ordering yielded good results. Our group couldn’t get this result, though.
-- Also, using compiler flag results in good result, which is interesting.
-- Overall you seem to be getting very good results! :D
+-Presentation of the work so far is very clear, and you tried to reason about the hardware.
+-It’s good to have both gcc and icc results. Also, you found that j-k-i is the best among different combinations.
 
 What you think they could improve on (and why)
--You might want to try block indexing? Although we have and our performance is far below yours. But
-	it is possible that it'd help further improve your performance.
--It’d be great to include MKL stats on your graphs for us, that was by far the highest performance.
+-You could improve the pre-processing of the computation: copy the matrix to have block indexing, or transpose like you mentioned in your report. It should improve the Gflop/s for the medium/high n ranges.
 
 Anything else you would like to add
--Overall this seems like you guys have made good progress.
--Good luck!
+-Overall it looks pretty good! :D
+-Wish we could help more but that's about as far as we got too
